@@ -12,7 +12,7 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
         
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email = email).first()
         if user:
             if check_password_hash(user.password, password):
                 flash('Logged in!', category='success')
@@ -24,7 +24,7 @@ def login():
         else: 
             flash('Email does not exist.', category='error')
 
-    return render_template("login.html", user=current_user)
+    return render_template("login.html", user = current_user)
 
 @auth.route("/logout")
 @login_required
