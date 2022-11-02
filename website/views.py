@@ -1,6 +1,3 @@
-from crypt import methods
-from multiprocessing import AuthenticationError
-from unicodedata import category, name
 from flask import Blueprint, render_template, request, flash, url_for, redirect
 from flask_login import login_required, current_user
 from .models import Post
@@ -31,10 +28,10 @@ def create_post():
             return redirect(url_for('views.home'))
     return render_template("create_post.html", user = current_user)
 
-@views.route("/delete-post/<id>", methods=['GET', 'POST'])
+@views.route("/delete-post/<id>")
 @login_required
-def delete_post():
-    post = Post.query.filter_by(id = id).first()
+def delete_post(id):
+    post = Post.query.filter_by(id=id).first()
 
     if not post:
         flash("Post does not exist!", category='error')
@@ -45,5 +42,4 @@ def delete_post():
         db.session.delete(post)
         db.session.commit()
         flash('Post deleted successfully', category='success')
-
     return redirect(url_for('views.home'))
