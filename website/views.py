@@ -56,6 +56,7 @@ def posts(username):
     posts = Post.query.filter_by(author=user.id).all()
 
     return render_template("posts.html", user=current_user, posts=posts, username=username)
+
 @views.route("/create-comment/<post_id>", methods=['POST'])
 @login_required
 
@@ -72,4 +73,20 @@ def create_comment(post_id):
 
 
     
+    return redirect(url_for('views.home'))
+
+@views.route("/delete-comment/<comment_id>")
+@login_required
+def delete_comment(comment_id):
+    comment = Comment.query.filter_by(id = comment_id).first()
+
+    if not comment:
+        flash("Comment does not exist.", category="error")
+    elif current_user.id != comment.author and current_user.id != comment.post.author:
+        flash("You do not have permission to delete this comment.", category="error")
+    else:
+        db.session.delete(comment)
+        db.session.commit()
+        flash("Comment deleted successfully!", category="success")
+        
     return redirect(url_for('views.home'))
