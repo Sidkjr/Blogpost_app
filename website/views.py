@@ -56,7 +56,7 @@ def posts(username):
     posts = Post.query.filter_by(author=user.id).all()
 
     return render_template("posts.html", user=current_user, posts=posts, username=username)
-@views.route("/create-comment/post_id>", methods=['POST'])
+@views.route("/create-comment/<post_id>", methods=['POST'])
 @login_required
 
 def create_comment(post_id):
