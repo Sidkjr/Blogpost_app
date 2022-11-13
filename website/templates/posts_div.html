@@ -10,7 +10,11 @@
             
             <div>
                 {{ post.likes|length }}
-                <a href="/like-post/{{post.id}}"><i class="far fa-heart"></i></a>
+                {% if user.id in post.likes|map(attribute="author")|list %}
+                    <a href="/like-post/{{post.id}}"><i class="fas fa-heart"></i></a>
+                {% else %}
+                    <a href="/like-post/{{post.id}}"><i class="far fa-heart"></i></a>
+                {% endif %}
                 {% if user.id == post.author %}
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
