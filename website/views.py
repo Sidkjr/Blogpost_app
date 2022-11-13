@@ -1,7 +1,7 @@
 from distutils.log import error
 from flask import Blueprint, render_template, request, flash, url_for, redirect
 from flask_login import login_required, current_user
-from .models import Post, User, Comment
+from .models import Post, User, Comment, Like
 from . import db
 
 views = Blueprint("views", __name__)
@@ -89,4 +89,23 @@ def delete_comment(comment_id):
         db.session.commit()
         flash("Comment deleted successfully!", category="success")
         
+    return redirect(url_for('views.home'))
+
+@views.route("/like-post/<post_id>", methods=['GET'])
+@login_required
+
+def like_post(post_id):
+    post = Post.query.filter_by(id=post_id)
+    like = Like.query.filter_by(author=current_user.id, post_id=post_id).first()
+
+    if not post:
+        flash('Post does not exist', category='error')
+    elif like:
+        db.session.delete(like)
+        db.session.commit()
+    else:
+        like = Like(author=current_user.id, post_id = post_id)
+        db.session.add(like)
+        db.session.commit()
+
     return redirect(url_for('views.home'))
