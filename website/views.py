@@ -1,7 +1,7 @@
 from distutils.log import error
 from flask import Blueprint, render_template, request, flash, url_for, redirect
 from flask_login import login_required, current_user
-from .models import Post, User, Comment, Like
+from .models import Post, User, Comment, Like, CommentLike
 from . import db
 
 views = Blueprint("views", __name__)
@@ -106,6 +106,25 @@ def like_post(post_id):
     else:
         like = Like(author=current_user.id, post_id = post_id)
         db.session.add(like)
+        db.session.commit()
+
+    return redirect(url_for('views.home'))
+
+@views.route("/like-comment/<comment_id>", methods=['GET'])
+@login_required
+
+def like_comment(comment_id):
+    comment = Comment.query.filter_by(id=comment_id)
+    commentlike = CommentLike.query.filter_by(author=current_user.id, comment_id=comment_id).first()
+
+    if not comment:
+        flash('Comment does not exist', category='error')
+    elif commentlike:
+        db.session.delete(commentlike)
+        db.session.commit()
+    else:
+        commentlike = CommentLike(author=current_user.id, comment_id=comment_id)
+        db.session.add(commentlike)
         db.session.commit()
 
     return redirect(url_for('views.home'))
