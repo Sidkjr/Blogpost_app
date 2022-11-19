@@ -78,9 +78,15 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            {{ comment.commentlikes|length }}
+                            {% if user.id in comment.commentlikes|map(attribute="author")|list %}
+                                <a href="/like-comment/{{comment.id}}"><i class="fas fa-heart"></i></a>
+                            {% else %}
+                                <a href="/like-comment/{{comment.id}}"><i class="far fa-heart"></i></a>
+                            {% endif %}
                             <br/>
-                            
                         {% endfor %}
+
                     </div>
                 </div>
             </div>
