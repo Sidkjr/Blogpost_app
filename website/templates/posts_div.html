@@ -52,13 +52,41 @@
                                                 <li>
                                                     <a href="/delete-comment/{{comment.id}}" class="dropdown-item">Delete</a>
                                                 </li>
+                                                <li>
+                                                    {% if user.id in comment.commentlikes|map(attribute="author")|list %}
+                                                        <a href="/like-comment/{{comment.id}}" class="dropdown-item">Unlike</a>
+                                                    {% else %}
+                                                        <a href="/like-comment/{{comment.id}}" class="dropdown-item">Like</a>
+                                                    {% endif %}
+                                                </li>
                                             </ul>
                                         </div>
+                                    {% else %}
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                {% if user.id in comment.commentlikes|map(attribute="author")|list %}
+                                                    <a href="/like-comment/{{comment.id}}" class="dropdown-item">Unlike</a>
+                                                {% else %}
+                                                    <a href="/like-comment/{{comment.id}}" class="dropdown-item">Like</a>
+                                                {% endif %}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                        
                                     {% endif %}
                                 </div>
                             </div>
-                            
+                            {{ comment.commentlikes|length }}
+                            {% if user.id in comment.commentlikes|map(attribute="author")|list %}
+                                <a href="/like-comment/{{comment.id}}"><i class="fas fa-heart"></i></a>
+                            {% else %}
+                                <a href="/like-comment/{{comment.id}}"><i class="far fa-heart"></i></a>
+                            {% endif %}
+                            <br/>
                         {% endfor %}
+
                     </div>
                 </div>
             </div>

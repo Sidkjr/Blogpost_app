@@ -1,7 +1,7 @@
 from distutils.log import error
 from flask import Blueprint, render_template, request, flash, url_for, redirect
 from flask_login import login_required, current_user
-from .models import Post, User, Comment, Like
+from .models import Post, User, Comment, Like, Commentlike
 from . import db
 
 views = Blueprint("views", __name__)
@@ -66,7 +66,7 @@ def create_comment(post_id):
     if not text:
         flash("Comment cannot be empty.", category='error')
     else:
-        comment = Comment(text=text, author=current_user.id, post_id=post_id)
+        comment = Comment(text=text, author=current_user.id, post_id=post_id, commentlikes=[])
         db.session.add(comment)
         db.session.commit()
         flash("Comment Added Successfully.", category='success')
@@ -107,5 +107,26 @@ def like_post(post_id):
         like = Like(author=current_user.id, post_id = post_id)
         db.session.add(like)
         db.session.commit()
+
+    return redirect(url_for('views.home'))
+
+@views.route("/like-comment/<comment_id>", methods=['GET'])
+@login_required
+
+def like_comment(comment_id):
+    comment = Comment.query.filter_by(id=comment_id)
+    commentlikes = Commentlike.query.filter_by(author=current_user.id, comment_id=comment_id).first()
+
+    if not comment:
+        flash('Comment does not exist', category='error')
+    elif commentlikes:
+        db.session.delete(commentlikes)
+        db.session.commit()
+        flash("Comment Like Removed!", category='success')
+    else:
+        commentlikes = Commentlike(author=current_user.id, comment_id=comment_id)
+        db.session.add(commentlikes)
+        db.session.commit()
+        flash("Comment Liked Successfully!", category='success')
 
     return redirect(url_for('views.home'))
